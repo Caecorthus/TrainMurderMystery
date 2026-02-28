@@ -4,6 +4,7 @@ import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.cca.GameWorldComponent;
 import dev.doctor4t.wathe.cca.MapEnhancementsWorldComponent;
 import dev.doctor4t.wathe.cca.PlayerStaminaComponent;
+import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.GravityConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.JumpConfig;
 import dev.doctor4t.wathe.game.GameFunctions;
 import dev.doctor4t.wathe.index.WatheItems;
@@ -28,6 +29,9 @@ public abstract class LivingEntityMixin extends EntityMixin {
     @Unique
     private static final EntityAttributeModifier KNIFE_KNOCKBACK_MODIFIER = new EntityAttributeModifier(Wathe.id("knife_knockback_modifier"), 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
+    @Unique
+    private float wathe$lastGravityMultiplier = 1.0f;
+
     @Shadow
     protected boolean jumping;
 
@@ -42,6 +46,41 @@ public abstract class LivingEntityMixin extends EntityMixin {
         if ((Object) this instanceof PlayerEntity player) {
             EntityAttributeModifier v = new EntityAttributeModifier(Wathe.id("knife_knockback_modifier"), .5f, EntityAttributeModifier.Operation.ADD_VALUE);
             updateAttribute(player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_KNOCKBACK), v, player.getMainHandStack().isOf(WatheItems.KNIFE));
+        }
+    }
+
+    // 服务端应用重力配置 - 根据地图配置修改玩家重力
+    @Inject(method = "tick", at = @At("HEAD"))
+    public void wathe$applyGravityMultiplier(CallbackInfo ci) {
+        if ((Object) this instanceof PlayerEntity player) {
+            EntityAttributeInstance gravityAttr = player.getAttributeInstance(EntityAttributes.GENERIC_GRAVITY);
+            if (gravityAttr == null) return;
+
+            GameWorldComponent gameComponent = GameWorldComponent.KEY.get(player.getWorld());
+            float targetMultiplier;
+            if (gameComponent != null && gameComponent.isRunning() && GameFunctions.isPlayerAliveAndSurvival(player)) {
+                GravityConfig gravityConfig = MapEnhancementsWorldComponent.KEY.get(player.getWorld()).getGravityConfig();
+                targetMultiplier = gravityConfig.gravityMultiplier();
+            } else {
+                targetMultiplier = 1.0f;
+            }
+
+            // 仅在乘数发生变化时更新属性修改器
+            if (targetMultiplier != wathe$lastGravityMultiplier) {
+                // 移除旧的修改器
+                if (gravityAttr.hasModifier(Wathe.id("map_gravity_modifier"))) {
+                    gravityAttr.removeModifier(Wathe.id("map_gravity_modifier"));
+                }
+                // 仅在乘数不为 1.0 时添加修改器
+                if (targetMultiplier != 1.0f) {
+                    gravityAttr.addPersistentModifier(new EntityAttributeModifier(
+                        Wathe.id("map_gravity_modifier"),
+                        targetMultiplier - 1.0f,
+                        EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+                    ));
+                }
+                wathe$lastGravityMultiplier = targetMultiplier;
+            }
         }
     }
 

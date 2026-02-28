@@ -33,6 +33,7 @@ public record MapEnhancementsConfiguration(
     // 交互黑名单
     Optional<InteractionBlacklistConfig> interactionBlacklist,
     // 游戏参数配置
+    Optional<GravityConfig> gravity,
     Optional<MovementConfig> movement,
     Optional<JumpConfig> jump,
     Optional<AmbienceConfig> ambience
@@ -137,6 +138,17 @@ public record MapEnhancementsConfiguration(
             Codec.FLOAT.optionalFieldOf("spawn_range_y", 48f).forGetter(SnowParticlesConfig::spawnRangeY),
             Codec.FLOAT.optionalFieldOf("spawn_range_z", 32f).forGetter(SnowParticlesConfig::spawnRangeZ)
         ).apply(instance, SnowParticlesConfig::new));
+    }
+
+    /**
+     * 重力配置
+     */
+    public record GravityConfig(float gravityMultiplier) {
+        public static final GravityConfig DEFAULT = new GravityConfig(1.0f);
+
+        public static final Codec<GravityConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.FLOAT.optionalFieldOf("gravity_multiplier", 1.0f).forGetter(GravityConfig::gravityMultiplier)
+        ).apply(instance, GravityConfig::new));
     }
 
     /**
@@ -258,6 +270,7 @@ public record MapEnhancementsConfiguration(
         // 交互黑名单
         InteractionBlacklistConfig.CODEC.optionalFieldOf("interaction_blacklist").forGetter(MapEnhancementsConfiguration::interactionBlacklist),
         // 游戏参数配置
+        GravityConfig.CODEC.optionalFieldOf("gravity").forGetter(MapEnhancementsConfiguration::gravity),
         MovementConfig.CODEC.optionalFieldOf("movement").forGetter(MapEnhancementsConfiguration::movement),
         JumpConfig.CODEC.optionalFieldOf("jump").forGetter(MapEnhancementsConfiguration::jump),
         AmbienceConfig.CODEC.optionalFieldOf("ambience").forGetter(MapEnhancementsConfiguration::ambience)
@@ -283,6 +296,10 @@ public record MapEnhancementsConfiguration(
 
     public InteractionBlacklistConfig getInteractionBlacklistOrDefault() {
         return interactionBlacklist.orElse(InteractionBlacklistConfig.DEFAULT);
+    }
+
+    public GravityConfig getGravityOrDefault() {
+        return gravity.orElse(GravityConfig.DEFAULT);
     }
 
     public MovementConfig getMovementOrDefault() {

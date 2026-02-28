@@ -8,6 +8,7 @@ import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.FogConfig
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.CameraShakeConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.SnowParticlesConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.InteractionBlacklistConfig;
+import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.GravityConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.MovementConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.JumpConfig;
 import dev.doctor4t.wathe.config.datapack.MapEnhancementsConfiguration.AmbienceConfig;
@@ -63,6 +64,7 @@ public class MapEnhancementsWorldComponent implements AutoSyncedComponent {
     private FogConfig syncedFog;
     private CameraShakeConfig syncedCameraShake;
     private InteractionBlacklistConfig syncedInteractionBlacklist;
+    private GravityConfig syncedGravity;
     private MovementConfig syncedMovement;
     private JumpConfig syncedJump;
     private AmbienceConfig syncedAmbience;
@@ -110,6 +112,14 @@ public class MapEnhancementsWorldComponent implements AutoSyncedComponent {
         }
         MapEnhancementsConfiguration config = getConfigForCurrentWorld();
         return config != null ? config.getInteractionBlacklistOrDefault() : InteractionBlacklistConfig.DEFAULT;
+    }
+
+    public GravityConfig getGravityConfig() {
+        if (world.isClient() && syncedGravity != null) {
+            return syncedGravity;
+        }
+        MapEnhancementsConfiguration config = getConfigForCurrentWorld();
+        return config != null ? config.getGravityOrDefault() : GravityConfig.DEFAULT;
     }
 
     public MovementConfig getMovementConfig() {
@@ -222,6 +232,12 @@ public class MapEnhancementsWorldComponent implements AutoSyncedComponent {
 
             this.syncedInteractionBlacklist = new InteractionBlacklistConfig(blocks, blockTags);
         }
+        // 反序列化重力配置
+        if (tag.contains("gravityMultiplier")) {
+            this.syncedGravity = new GravityConfig(
+                tag.getFloat("gravityMultiplier")
+            );
+        }
         // 反序列化移动配置
         if (tag.contains("movementWalkMultiplier")) {
             this.syncedMovement = new MovementConfig(
@@ -287,6 +303,10 @@ public class MapEnhancementsWorldComponent implements AutoSyncedComponent {
         for (int i = 0; i < blacklist.blockTags().size(); i++) {
             tag.putString("blacklistTag_" + i, blacklist.blockTags().get(i));
         }
+
+        // 序列化重力配置
+        GravityConfig gravity = getGravityConfig();
+        tag.putFloat("gravityMultiplier", gravity.gravityMultiplier());
 
         // 序列化移动配置
         MovementConfig movement = getMovementConfig();

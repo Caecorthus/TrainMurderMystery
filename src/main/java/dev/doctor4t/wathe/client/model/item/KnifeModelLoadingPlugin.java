@@ -10,20 +10,17 @@ public class KnifeModelLoadingPlugin implements ModelLoadingPlugin {
 
     public static final ModelIdentifier KNIFE_MODEL_ID = ModelIdentifier.ofInventoryVariant(KnifeItem.ITEM_ID);
 
-    public static Identifier getModelLocation(KnifeItem.Skin skin, Variant variant) {
-        var skinPart = skin == KnifeItem.Skin.DEFAULT ? "" : "_%s".formatted(skin.getName());
+    public static Identifier getModelLocation(Variant variant) {
         var variantPart = variant == Variant.DEFAULT ? "" : "_%s".formatted(variant.asString());
 
-        return KNIFE_MODEL_ID.id().withPath(path -> "item/%s%s%s".formatted(path, skinPart, variantPart));
+        return KNIFE_MODEL_ID.id().withPath(path -> "item/%s%s".formatted(path, variantPart));
     }
 
     @Override
     public void onInitializeModelLoader(Context pluginContext) {
         // make sure all models get loaded
-        for (KnifeItem.Skin skin : KnifeItem.Skin.values()) {
-            for (Variant variant : Variant.values()) {
-                pluginContext.addModels(getModelLocation(skin, variant));
-            }
+        for (Variant variant : Variant.values()) {
+            pluginContext.addModels(getModelLocation(variant));
         }
 
         pluginContext.modifyModelOnLoad().register((unbakedModel, context) -> {

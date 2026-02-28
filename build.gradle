@@ -41,11 +41,6 @@ repositories {
 	}
 
 	maven {
-        url "https://maven.uuid.gg/releases"
-        name "Datasync"
-    }
-
-	maven {
         url "https://maven.maxhenkel.de/repository/public"
     }
 }
@@ -72,8 +67,9 @@ dependencies {
 
 	// Libraries
 	// Ratatouille
-	modIncludeImplementation "dev.upcraft.datasync:datasync-minecraft-${project.minecraft_version}-fabric:${project.datasync_version}"
-	modImplementation "dev.doctor4t:ratatouille:${project.ratatouille_version}"
+	modImplementation("dev.doctor4t:ratatouille:${project.ratatouille_version}") {
+		exclude group: "dev.upcraft.datasync"
+	}
 	// CCA
 	modImplementation include ("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
 	modImplementation include ("org.ladysnake.cardinal-components-api:cardinal-components-world:${project.cca_version}")

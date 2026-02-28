@@ -26,8 +26,9 @@ import dev.doctor4t.wathe.record.replay.DefaultReplayFormatters;
 import dev.doctor4t.wathe.record.replay.ReplayGenerator;
 import dev.doctor4t.wathe.record.replay.ReplayRegistry;
 import dev.doctor4t.wathe.api.event.RecordEvents;
+import dev.doctor4t.wathe.cosmetic.CosmeticApiClient;
+import dev.doctor4t.wathe.cosmetic.CosmeticDataCache;
 import dev.doctor4t.wathe.util.*;
-import dev.upcraft.datasync.api.util.Entitlements;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -57,6 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Wathe implements ModInitializer {
     public static final String MOD_ID = "wathe";
@@ -173,6 +175,7 @@ public class Wathe implements ModInitializer {
         // 玩家断开连接时,不管是什么阵营都视为死亡
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayerEntity player = handler.getPlayer();
+            CosmeticDataCache.remove(player.getUuid());
             GameRecordManager.recordPlayerLeave(player);
             GameWorldComponent game = GameWorldComponent.KEY.get(player.getWorld());
             if (game.isRunning()
@@ -194,6 +197,16 @@ public class Wathe implements ModInitializer {
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             GameRecordManager.recordPlayerJoin(handler.getPlayer());
+
+            // 异步拉取该玩家的皮肤数据并缓存
+            UUID skinUuid = handler.getPlayer().getUuid();
+            CosmeticApiClient.fetchPlayerCosmetics(skinUuid).thenAccept(cosmetics -> {
+                server.execute(() -> {
+                    if (!cosmetics.isEmpty()) {
+                        CosmeticDataCache.update(skinUuid, cosmetics);
+                    }
+                });
+            });
 //            ServerPlayerEntity player = handler.getPlayer();
 //
 //            // 查找是否有世界正在运行游戏
@@ -320,10 +333,6 @@ public class Wathe implements ModInitializer {
     }
 
     public static @NotNull Boolean isSupporter(PlayerEntity player) {
-        if ("XruiDD".equals(player.getName().getString())) {
-            return true;
-        }
-        Optional<Entitlements> entitlements = Entitlements.token().get(player.getUuid());
-        return entitlements.map(value -> value.keys().stream().anyMatch(identifier -> identifier.equals(COMMAND_ACCESS))).orElse(false);
+        return true;
     }
 }

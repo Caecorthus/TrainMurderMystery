@@ -7,7 +7,6 @@ import dev.doctor4t.wathe.block.*;
 import dev.doctor4t.wathe.block.property.CouchArms;
 import dev.doctor4t.wathe.index.WatheBlocks;
 import dev.doctor4t.wathe.index.WatheItems;
-import dev.doctor4t.wathe.item.KnifeItem;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.block.*;
@@ -381,9 +380,7 @@ public class WatheModelGen extends FabricModelProvider {
         generator.register(WatheItems.THROWN_GRENADE, SMALL_ITEM);
         generator.register(WatheItems.FIRECRACKER, SMALL_ITEM);
 
-        for (KnifeItem.Skin value : KnifeItem.Skin.values()) {
-            registerTemplateWeapon(KNIFE_TEMPLATE, value == KnifeItem.Skin.DEFAULT ? null : value.getName(), WatheItems.KNIFE, generator);
-        }
+        registerTemplateWeapon(KNIFE_TEMPLATE, null, WatheItems.KNIFE, generator);
     }
 
     private void registerBuiltinModel(Item item, ItemModelGenerator generator) {

@@ -15,6 +15,7 @@ import dev.doctor4t.wathe.client.gui.TimeRenderer;
 import dev.doctor4t.wathe.client.gui.screen.MapVotingScreen;
 import dev.doctor4t.wathe.client.model.WatheModelLayers;
 import dev.doctor4t.wathe.client.model.item.KnifeModelLoadingPlugin;
+import dev.doctor4t.wathe.client.skin.ItemSkinTextureManager;
 import dev.doctor4t.wathe.client.render.block_entity.PlateBlockEntityRenderer;
 import dev.doctor4t.wathe.client.render.block_entity.SmallDoorBlockEntityRenderer;
 import dev.doctor4t.wathe.client.render.block_entity.WheelBlockEntityRenderer;
@@ -36,6 +37,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientConfigurationNetworking;
@@ -114,6 +116,14 @@ public class WatheClient implements ClientModInitializer {
 
         // Custom Baked Models
         ModelLoadingPlugin.register(new KnifeModelLoadingPlugin());
+
+        // Skin system initialization
+        ItemSkinTextureManager.getInstance().initialize();
+
+        // Clear skin textures on disconnect (release GPU resources)
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            ItemSkinTextureManager.getInstance().clearAll();
+        });
 
         // Block render layers
         BlockRenderLayerMap.INSTANCE.putBlocks(RenderLayer.getCutout(),

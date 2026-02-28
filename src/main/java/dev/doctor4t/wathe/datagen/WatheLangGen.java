@@ -92,7 +92,13 @@ public class WatheLangGen extends FabricLanguageProvider {
         builder.add("tip.letter.tooltip1", "Enjoy your trip on the 1st of January 1923.");
         builder.add("tip.letter.tooltip2", "La Sirène wishes you a pleasant and safe voyage.");
         builder.add("tip.skin", "Skin: ");
-        builder.add("tip.change_skin", " [Right-click to change (supporter only)]");
+        builder.add("tip.skin.loading", "Skin loading...");
+        builder.add("tip.skin.failed", "Skin failed to load");
+        builder.add("tip.skin.rarity.white", "Common");
+        builder.add("tip.skin.rarity.green", "Custom");
+        builder.add("tip.skin.rarity.blue", "Antique");
+        builder.add("tip.skin.rarity.purple", "Unique");
+        builder.add("tip.skin.rarity.orange", "Legendary");
 
         builder.add("itemGroup.wathe.building", "Wathe: Building Blocks");
         builder.add("itemGroup.wathe.decoration", "Wathe: Decoration & Functional");

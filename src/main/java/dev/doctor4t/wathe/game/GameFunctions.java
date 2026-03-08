@@ -198,6 +198,7 @@ public class GameFunctions {
         // clear items, clear previous game data
         for (ServerPlayerEntity serverPlayerEntity : players) {
             serverPlayerEntity.getInventory().clear();
+            serverPlayerEntity.clearStatusEffects();
             PlayerMoodComponent.KEY.get(serverPlayerEntity).reset();
             PlayerShopComponent.KEY.get(serverPlayerEntity).reset();
             PlayerPoisonComponent.KEY.get(serverPlayerEntity).reset();
@@ -472,6 +473,7 @@ public class GameFunctions {
     public static void resetPlayer(ServerPlayerEntity player) {
         player.dismountVehicle();
         player.getInventory().clear();
+        player.clearStatusEffects();
         PlayerMoodComponent.KEY.get(player).reset();
         PlayerShopComponent.KEY.get(player).reset();
         PlayerPoisonComponent.KEY.get(player).reset();

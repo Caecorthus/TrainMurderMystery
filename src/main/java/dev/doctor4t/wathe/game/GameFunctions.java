@@ -770,22 +770,29 @@ public class GameFunctions {
     }
 
     /**
-     * 随机选择一个有空位的房间
-     * 从所有未满的房间中随机选择一个
+     * 均匀分配房间：优先分配到人数最少的未满房间，人数相同时随机选择
      * 如果所有房间都满了，则按顺序从第一个房间开始强制塞人
      */
     private static int findRandomAvailableRoom(Map<Integer, Integer> roomPlayerCounts, MapEnhancementsWorldComponent enhancements, int totalRooms, Random random) {
-        // 收集所有有空位的房间
+        // 收集人数最少且有空位的房间
         List<Integer> availableRooms = new ArrayList<>();
+        int minCount = Integer.MAX_VALUE;
+
         for (int i = 1; i <= totalRooms; i++) {
             int currentCount = roomPlayerCounts.getOrDefault(i, 0);
             int maxPlayers = enhancements.getRoomConfig(i).map(RoomConfig::getMaxPlayers).orElse(1);
             if (currentCount < maxPlayers) {
-                availableRooms.add(i);
+                if (currentCount < minCount) {
+                    minCount = currentCount;
+                    availableRooms.clear();
+                    availableRooms.add(i);
+                } else if (currentCount == minCount) {
+                    availableRooms.add(i);
+                }
             }
         }
 
-        // 如果有空位的房间，随机选择一个
+        // 从人数最少的房间中随机选一个
         if (!availableRooms.isEmpty()) {
             return availableRooms.get(random.nextInt(availableRooms.size()));
         }

@@ -58,6 +58,8 @@ public class MoodRenderer {
             renderPsycho(player, textRenderer, context, psycho, tickCounter);
             return;
         }
+        Role role = gameWorldComponent.getRole(player);
+        boolean isFakeMood = role != null && role.getMoodType() == Role.MoodType.FAKE;
         for (PlayerMoodComponent.Task task : component.tasks.keySet()) {
             if (!renderers.containsKey(task)) {
                 for (TaskRenderer renderer : renderers.values()) renderer.index++;
@@ -69,7 +71,7 @@ public class MoodRenderer {
             TaskRenderer task = renderers.get(taskType);
             if (task != null) {
                 task.present = false;
-                if (task.tick(component.tasks.get(taskType), tickCounter.getTickDelta(true))) toRemove.add(taskType);
+                if (task.tick(component.tasks.get(taskType), tickCounter.getTickDelta(true), isFakeMood)) toRemove.add(taskType);
             }
         }
         for (PlayerMoodComponent.Task task : toRemove) renderers.remove(task);
@@ -95,7 +97,6 @@ public class MoodRenderer {
             moodOffset = MathHelper.lerp(tickCounter.getTickDelta(true) / 8, moodOffset, 0f);
             moodTextWidth = MathHelper.lerp(tickCounter.getTickDelta(true) / 32, moodTextWidth, 100f);
         }
-        Role role = gameWorldComponent.getRole(player);
         if (role != null) {
             if (role.getMoodType() == Role.MoodType.FAKE) {
                 renderKiller(textRenderer, context);
@@ -257,9 +258,9 @@ public class MoodRenderer {
         public boolean present = false;
         public Text text = Text.empty();
 
-        public boolean tick(PlayerMoodComponent.TrainTask present, float delta) {
+        public boolean tick(PlayerMoodComponent.TrainTask present, float delta, boolean isFakeMood) {
             if (present != null)
-                this.text = Text.translatable("task." + (WatheClient.isKiller() ? "fake" : "feel")).append(Text.translatable("task." + present.getName()));
+                this.text = Text.translatable("task." + (isFakeMood ? "fake" : "feel")).append(Text.translatable("task." + present.getName()));
             this.present = present != null;
             this.alpha = MathHelper.lerp(delta / 16, this.alpha, present != null ? 1f : 0f);
             this.offset = MathHelper.lerp(delta / 32, this.offset, this.index);

@@ -155,6 +155,7 @@ public class PlayerMoodComponent implements AutoSyncedComponent, ServerTickingCo
         Role role = gameWorldComponent.getRole(this.player);
         // 只有真实心情的角色才会受到心情系统影响
         boolean hasRealMood = role != null && role.getMoodType() == Role.MoodType.REAL;
+        boolean hasFakeMood = role != null && role.getMoodType() == Role.MoodType.FAKE;
 
         if (hasRealMood && !this.tasks.isEmpty()) {
             this.setMood(this.mood - this.tasks.size() * GameConstants.MOOD_DRAIN);
@@ -166,8 +167,8 @@ public class PlayerMoodComponent implements AutoSyncedComponent, ServerTickingCo
             return;
         }
 
-        // 只有真实心情的角色才会生成任务
-        if (!hasRealMood) return;
+        // 只有真实心情和假心情的角色才会生成任务（假心情角色获得假任务）
+        if (!hasRealMood && !hasFakeMood) return;
 
         this.nextTaskTimer--;
         if (this.nextTaskTimer <= 0) {
@@ -188,7 +189,9 @@ public class PlayerMoodComponent implements AutoSyncedComponent, ServerTickingCo
             task.tick(this.player);
             if (task.isFulfilled(this.player)) {
                 removals.add(task.getType());
-                this.setMood(this.mood + GameConstants.MOOD_GAIN);
+                if (hasRealMood) {
+                    this.setMood(this.mood + GameConstants.MOOD_GAIN);
+                }
                 if (this.player instanceof ServerPlayerEntity tempPlayer) {
                     ServerPlayNetworking.send(tempPlayer, new TaskCompletePayload());
                     TaskComplete.EVENT.invoker().onTaskComplete(tempPlayer, task.getType());

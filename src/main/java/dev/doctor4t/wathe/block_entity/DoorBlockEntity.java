@@ -1,5 +1,6 @@
 package dev.doctor4t.wathe.block_entity;
 
+import dev.doctor4t.wathe.api.event.DoorStateChanged;
 import dev.doctor4t.wathe.block.DoorPartBlock;
 import dev.doctor4t.wathe.block.SmallDoorBlock;
 import dev.doctor4t.wathe.game.GameConstants;
@@ -158,6 +159,9 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
         if (this.open) {
             this.toggle(false);
         }
+        if (this.world != null && !this.world.isClient()) {
+            DoorStateChanged.JAM.invoker().onStateChanged(this.world, this.pos, this);
+        }
     }
 
     public void blast() {
@@ -165,6 +169,9 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
             this.toggle(false);
         }
         this.setBlasted(true);
+        if (this.world != null && !this.world.isClient()) {
+            DoorStateChanged.BLAST.invoker().onStateChanged(this.world, this.pos, this);
+        }
     }
 
     public boolean isJammed() {

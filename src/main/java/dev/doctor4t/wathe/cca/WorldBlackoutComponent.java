@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import dev.doctor4t.wathe.api.event.BlackoutEffect;
 import dev.doctor4t.wathe.game.GameFunctions;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
@@ -157,6 +158,12 @@ public class WorldBlackoutComponent implements ServerTickingComponent {
                 );
                 player.addStatusEffect(nightVision);
             } else {
+                // 触发关灯事件，允许模组取消失明（如金酒免疫）
+                BlackoutEffect.BlackoutResult result = BlackoutEffect.BEFORE.invoker()
+                    .beforeBlackoutEffect(player, effectDuration);
+                if (result != null && result.cancelled()) {
+                    continue;
+                }
                 StatusEffectInstance darkness = new StatusEffectInstance(
                     StatusEffects.BLINDNESS,
                     effectDuration,

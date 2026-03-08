@@ -121,12 +121,7 @@ public class MoodRenderer {
         context.getMatrices().push();
         context.getMatrices().translate(shakeX, shakeY, 0); // 统一抖动
         context.getMatrices().translate(0, 3 * moodOffset, 0);
-        Identifier mood = MOOD_HAPPY;
-        if (moodRender < GameConstants.DEPRESSIVE_MOOD_THRESHOLD) {
-            mood = MOOD_DEPRESSIVE;
-        } else if (moodRender < GameConstants.MID_MOOD_THRESHOLD) {
-            mood = MOOD_MID;
-        }
+        Identifier mood = getCivilianMoodIcon(moodRender);
         if (arrowProgress < 0.1f) {
             if (prevMood >= GameConstants.DEPRESSIVE_MOOD_THRESHOLD && moodRender < GameConstants.DEPRESSIVE_MOOD_THRESHOLD) {
                 arrowProgress = -1f;
@@ -189,7 +184,7 @@ public class MoodRenderer {
     private static void renderKiller(@NotNull TextRenderer textRenderer, @NotNull DrawContext context) {
         context.getMatrices().push();
         context.getMatrices().translate(0, 3 * moodOffset, 0);
-        context.drawGuiTexture(MOOD_KILLER, 5, 6, 14, 17);
+        context.drawGuiTexture(getKillerMoodIcon(), 5, 6, 14, 17);
         context.getMatrices().pop();
         context.getMatrices().push();
         context.getMatrices().translate(0, 10 * moodOffset, 0);
@@ -249,6 +244,28 @@ public class MoodRenderer {
             context.getMatrices().pop();
         }
         context.getMatrices().pop();
+    }
+
+    /**
+     * 获取平民阵营的心情图标。可被 mixin 覆盖以自定义图标。
+     * @param mood 当前心情值
+     * @return 图标纹理标识符
+     */
+    public static Identifier getCivilianMoodIcon(float mood) {
+        if (mood < GameConstants.DEPRESSIVE_MOOD_THRESHOLD) {
+            return MOOD_DEPRESSIVE;
+        } else if (mood < GameConstants.MID_MOOD_THRESHOLD) {
+            return MOOD_MID;
+        }
+        return MOOD_HAPPY;
+    }
+
+    /**
+     * 获取杀手阵营的心情图标。可被 mixin 覆盖以自定义图标。
+     * @return 图标纹理标识符
+     */
+    public static Identifier getKillerMoodIcon() {
+        return MOOD_KILLER;
     }
 
     private static class TaskRenderer {

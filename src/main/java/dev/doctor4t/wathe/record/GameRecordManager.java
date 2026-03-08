@@ -280,10 +280,14 @@ public final class GameRecordManager {
     }
 
     public static void recordPlatterTake(ServerPlayerEntity player, Identifier itemId, BlockPos platterPos, @Nullable String poisoner) {
+        recordPlatterTake(player, itemId, platterPos, poisoner, null);
+    }
+
+    public static void recordPlatterTake(ServerPlayerEntity player, Identifier itemId, BlockPos platterPos, @Nullable String poisoner, @Nullable NbtCompound extra) {
         if (!hasActiveMatch()) {
             return;
         }
-        NbtCompound data = new NbtCompound();
+        NbtCompound data = extra != null ? extra.copy() : new NbtCompound();
         data.putString("item", itemId.toString());
         putBlockPos(data, "pos", platterPos);
         if (poisoner != null) {

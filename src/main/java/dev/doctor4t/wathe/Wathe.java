@@ -227,6 +227,9 @@ public class Wathe implements ModInitializer {
             if (!gameWorldComponent.isRunning()) {
                 if (!Objects.equals(voting.getLastSelectedDimension(), handler.getPlayer().getWorld().getRegistryKey().getValue())) {
                     GameFunctions.teleportPlayer(handler.getPlayer());
+                } else {
+                    // 已在正确维度，确保出生点正确
+                    GameFunctions.setPlayerSpawnToMapSpawn(handler.getPlayer(), handler.getPlayer().getServerWorld());
                 }
             } else if (!GameFunctions.isPlayerAliveAndSurvival(handler.player)){
                 GameFunctions.teleportPlayer(handler.getPlayer());

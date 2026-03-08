@@ -813,6 +813,24 @@ public class GameFunctions {
     }
     public static final ScheduledExecutorService SCHEDULER = Executors.newSingleThreadScheduledExecutor();
 
+    /**
+     * 设置玩家的 Minecraft 出生点到当前地图的配置出生位置。
+     * 旁观者使用旁观出生点，其他玩家使用普通出生点。
+     */
+    public static void setPlayerSpawnToMapSpawn(ServerPlayerEntity player, ServerWorld world) {
+        MapVariablesWorldComponent spawn = MapVariablesWorldComponent.KEY.get(world);
+        MapVariablesWorldComponent.PosWithOrientation spawnPos = player.isSpectator()
+            ? spawn.getSpectatorSpawnPos()
+            : spawn.getSpawnPos();
+        player.setSpawnPoint(
+            world.getRegistryKey(),
+            new BlockPos((int) spawnPos.pos.getX(), (int) spawnPos.pos.getY(), (int) spawnPos.pos.getZ()),
+            spawnPos.yaw,
+            true,
+            false
+        );
+    }
+
     public static void teleportPlayer(ServerPlayerEntity player) {
         MinecraftServer server = player.getServer();
         SCHEDULER.schedule(() -> {
@@ -837,7 +855,7 @@ public class GameFunctions {
                         spawnPos.yaw,
                         spawnPos.pitch
                 );
-                player.setSpawnPoint(worldKey, new BlockPos((int) spawnPos.pos.getX(), (int) spawnPos.pos.getY(), (int) spawnPos.pos.getZ()), spawnPos.yaw, true, false);
+                setPlayerSpawnToMapSpawn(player, world);
                 TrainVoicePlugin.resetPlayer(player.getUuid());
                 player.getInventory().clear();
             });
@@ -857,9 +875,13 @@ public class GameFunctions {
 
         // Teleport all players from all worlds to the target dimension
         for (ServerWorld world : currentWorld.getServer().getWorlds()) {
-            if (world.getRegistryKey().equals(dimKey)) continue; // Already in target
             for (ServerPlayerEntity player : new ArrayList<>(world.getPlayers())) {
-                teleportPlayer(player);
+                if (world.getRegistryKey().equals(dimKey)) {
+                    // 已在目标维度，只更新出生点
+                    setPlayerSpawnToMapSpawn(player, targetWorld);
+                } else {
+                    teleportPlayer(player);
+                }
             }
         }
 

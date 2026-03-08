@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class CosmeticApiClient {
     private static final Gson GSON = new Gson();
-    private static final String COSMETIC_API_URL = "http://localhost:3001";
+    private static final String COSMETIC_API_URL = "https://express-api.tlspark.cn";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
             .build();

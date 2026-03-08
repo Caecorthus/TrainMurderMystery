@@ -167,9 +167,12 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             return;
         }
 
+        // 仅允许攻击玩家，防止破坏画、展示框、盔甲架等非玩家实体
         if (self.isCreative() || this.getMainHandStack().isOf(WatheItems.KNIFE)
                 || (target instanceof PlayerEntity playerTarget && AllowPlayerPunching.EVENT.invoker().allowPunching(self, playerTarget))) {
-            original.call(target);
+            if (self.isCreative() || target instanceof PlayerEntity) {
+                original.call(target);
+            }
         }
     }
 

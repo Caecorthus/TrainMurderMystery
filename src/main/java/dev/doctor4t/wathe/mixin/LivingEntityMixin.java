@@ -30,7 +30,7 @@ public abstract class LivingEntityMixin extends EntityMixin {
     private static final EntityAttributeModifier KNIFE_KNOCKBACK_MODIFIER = new EntityAttributeModifier(Wathe.id("knife_knockback_modifier"), 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
 
     @Unique
-    private float wathe$lastGravityMultiplier = 1.0f;
+    private float wathe$lastGravityMultiplier = Float.NaN;
 
     @Shadow
     protected boolean jumping;
@@ -73,7 +73,7 @@ public abstract class LivingEntityMixin extends EntityMixin {
                 }
                 // 仅在乘数不为 1.0 时添加修改器
                 if (targetMultiplier != 1.0f) {
-                    gravityAttr.addPersistentModifier(new EntityAttributeModifier(
+                    gravityAttr.addTemporaryModifier(new EntityAttributeModifier(
                         Wathe.id("map_gravity_modifier"),
                         targetMultiplier - 1.0f,
                         EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL

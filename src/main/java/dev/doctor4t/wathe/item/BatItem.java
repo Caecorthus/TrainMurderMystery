@@ -30,7 +30,8 @@ public class BatItem extends Item {
             } else {
                 playerPsychoComponent.startPsycho();
             }
-            return TypedActionResult.success(user.getStackInHand(hand));
+            user.swingHand(hand, true);
+            return TypedActionResult.consume(user.getStackInHand(hand));
         }
 
         return super.use(world, user, hand);

@@ -92,6 +92,7 @@ public class WalkieTalkieBroadcastRenderer {
 
         int screenWidth = context.getScaledWindowWidth();
         int screenHeight = context.getScaledWindowHeight();
+        int maxTextWidth = screenWidth - PADDING * 4;
         int y = START_Y;
         int count = messageQueue.size();
 
@@ -115,6 +116,10 @@ public class WalkieTalkieBroadcastRenderer {
             // 绘制单条消息：半透明背景 + 居中白色文字
             BroadcastMessageInfo info = messageQueue.get(i);
             Text message = info.message();
+            // 截断过长文本以防溢出屏幕
+            if (renderer.getWidth(message) > maxTextWidth) {
+                message = Text.literal(renderer.trimToWidth(message.getString(), maxTextWidth - renderer.getWidth("...")) + "...");
+            }
             int textWidth = renderer.getWidth(message);
             int x = (screenWidth - textWidth) / 2;
 

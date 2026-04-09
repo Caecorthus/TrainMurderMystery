@@ -9,6 +9,7 @@ import dev.doctor4t.wathe.WatheConfig;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
 import dev.doctor4t.wathe.cca.*;
+import dev.doctor4t.wathe.client.gui.WalkieTalkieBroadcastRenderer;
 import dev.doctor4t.wathe.client.gui.RoundTextRenderer;
 import dev.doctor4t.wathe.client.gui.StoreRenderer;
 import dev.doctor4t.wathe.client.gui.TimeRenderer;
@@ -125,6 +126,7 @@ public class WatheClient implements ClientModInitializer {
         // Clear skin textures on disconnect (release GPU resources)
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             ItemSkinTextureManager.getInstance().clearAll();
+            WalkieTalkieBroadcastRenderer.clear();
         });
 
         // Block render layers

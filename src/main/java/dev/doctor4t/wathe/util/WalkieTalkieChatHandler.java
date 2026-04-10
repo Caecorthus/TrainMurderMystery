@@ -65,7 +65,7 @@ public class WalkieTalkieChatHandler {
 
                 // 发送 S2C 广播数据包，在接收者屏幕上方显示消息副本
                 ServerPlayNetworking.send(receiver, new WalkieTalkieBroadcastPayload(
-                        sender.getName().getString(), senderChannel, chatMessage));
+                        senderChannel, chatMessage));
             }
         });
     }

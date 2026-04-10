@@ -43,7 +43,7 @@ public abstract class KeyBindingMixin {
             }
         }
         //其他键位始终不允许，防止出现bug
-        if (!result && WatheClient.isPlayerPlayingAndAlive() && WatheClient.trainComponent != null && WatheClient.trainComponent.hasHud()) {
+        if (!result && WatheClient.isPlayerPlayingAndAlive() && !WatheClient.isPlayerCreative() && WatheClient.trainComponent != null && WatheClient.trainComponent.hasHud()) {
             result = this.equals(MinecraftClient.getInstance().options.swapHandsKey) ||
                     this.equals(MinecraftClient.getInstance().options.togglePerspectiveKey) ||
                     this.equals(MinecraftClient.getInstance().options.dropKey) ||

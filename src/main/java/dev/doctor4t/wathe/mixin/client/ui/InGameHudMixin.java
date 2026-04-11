@@ -40,17 +40,16 @@ public class InGameHudMixin {
 
     @Inject(method = "renderMainHud", at = @At("TAIL"))
     private void wathe$renderHud(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        ClientPlayerEntity player = this.client.player;
+        if (player == null) return;
+
+        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+        HudHeaderLayout layout = HudHeaderLayout.compute(renderer, player);
+
         // 对讲机广播消息渲染（独立于 trainComponent，始终渲染）
-        ClientPlayerEntity broadcastPlayer = this.client.player;
-        if (broadcastPlayer != null) {
-            TextRenderer broadcastRenderer = MinecraftClient.getInstance().textRenderer;
-            WalkieTalkieBroadcastRenderer.renderHud(broadcastRenderer, broadcastPlayer, context);
-        }
+        WalkieTalkieBroadcastRenderer.renderHud(renderer, player, context, layout.broadcastTopY());
 
         if (WatheClient.trainComponent != null && WatheClient.trainComponent.hasHud()) {
-            ClientPlayerEntity player = this.client.player;
-            if (player == null) return;
-            TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
             MoodRenderer.renderHud(player, renderer, context, tickCounter);
             StaminaRenderer.renderHud(player, context, tickCounter);
             ArmorRenderer.renderHud(player, context, tickCounter);
@@ -58,8 +57,8 @@ public class InGameHudMixin {
             RoundTextRenderer.renderHud(renderer, player, context);
             if (MinecraftClient.getInstance().currentScreen == null)
                 StoreRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true));
-            TimeRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true));
-            MatchPlayerCountRenderer.renderHud(renderer, player, context);
+            TimeRenderer.renderHud(renderer, player, context, tickCounter.getTickDelta(true), layout);
+            MatchPlayerCountRenderer.renderHud(renderer, context, layout);
             LobbyPlayersRenderer.renderHud(renderer, player, context);
             CooldownRenderer.renderHud(renderer, player, context, tickCounter);
         }

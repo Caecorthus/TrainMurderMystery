@@ -1,9 +1,6 @@
 package dev.doctor4t.wathe.client.gui;
 
-import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.cca.GameTimeComponent;
-import dev.doctor4t.wathe.cca.GameWorldComponent;
-import dev.doctor4t.wathe.client.WatheClient;
 import dev.doctor4t.wathe.game.GameConstants;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -16,8 +13,8 @@ public class TimeRenderer {
     public static TimeNumberRenderer view = new TimeNumberRenderer();
     public static float offsetDelta = 0f;
 
-    public static void renderHud(TextRenderer renderer, @NotNull ClientPlayerEntity player, @NotNull DrawContext context, float delta) {
-        if (shouldRender(player)) {
+    public static void renderHud(TextRenderer renderer, @NotNull ClientPlayerEntity player, @NotNull DrawContext context, float delta, @NotNull HudHeaderLayout layout) {
+        if (layout.showTime()) {
             int time = GameTimeComponent.KEY.get(player.getWorld()).getTime();
             if (Math.abs(view.getTarget() - time) > 10) offsetDelta = time > view.getTarget() ? .6f : -.6f;
             if (time < GameConstants.getInTicks(1, 0)) {
@@ -35,12 +32,6 @@ public class TimeRenderer {
             view.render(renderer, context, 0, 0, colour, delta);
             context.getMatrices().pop();
         }
-    }
-
-    public static boolean shouldRender(@NotNull ClientPlayerEntity player) {
-        GameWorldComponent gameWorldComponent = GameWorldComponent.KEY.get(player.getWorld());
-        Role role = gameWorldComponent.getRole(player);
-        return gameWorldComponent.isRunning() && ((role != null && role.canSeeTime()) || WatheClient.canSeeSpectatorInformation());
     }
 
     public static void tick() {
@@ -118,7 +109,7 @@ public class TimeRenderer {
             String digitText = String.valueOf(digit);
             String digitNextText = String.valueOf(digitNext);
             int digitX = -renderer.getWidth(digitText) / 2;
-            int digitNextX = -renderer.getWidth(digitNextText) / 2;
+            int digitNextX = digit == digitNext ? digitX : -renderer.getWidth(digitNextText) / 2;
             colour &= 0xFFFFFF;
             context.getMatrices().push();
             context.getMatrices().translate(0, -offset * (renderer.fontHeight + 2), 0);

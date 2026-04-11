@@ -34,9 +34,6 @@ public class WalkieTalkieBroadcastRenderer {
     /** 屏幕上最多同时显示的消息数量 */
     private static final int MAX_VISIBLE_MESSAGES = 4;
 
-    /** 消息起始 Y 坐标（距屏幕顶部的像素距离） */
-    private static final int START_Y = 20;
-
     /** 每条消息之间的垂直间距（像素） */
     private static final int MESSAGE_SPACING = 20;
 
@@ -78,7 +75,7 @@ public class WalkieTalkieBroadcastRenderer {
      * @param player   当前客户端玩家
      * @param context  绘制上下文
      */
-    public static void renderHud(TextRenderer renderer, ClientPlayerEntity player, DrawContext context) {
+    public static void renderHud(TextRenderer renderer, ClientPlayerEntity player, DrawContext context, int startY) {
         if (player == null || messageQueue.isEmpty()) return;
 
         MinecraftClient client = MinecraftClient.getInstance();
@@ -93,7 +90,7 @@ public class WalkieTalkieBroadcastRenderer {
         int screenWidth = context.getScaledWindowWidth();
         int screenHeight = context.getScaledWindowHeight();
         int maxTextWidth = screenWidth - PADDING * 4;
-        int y = START_Y;
+        int y = startY;
         int count = messageQueue.size();
 
         for (int i = 0; i < count; i++) {

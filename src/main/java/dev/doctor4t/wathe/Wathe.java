@@ -158,6 +158,7 @@ public class Wathe implements ModInitializer {
         GameRecordHooks.register();
 
         // 注册对讲机聊天拦截处理器（手持对讲机发送消息时广播给同频道玩家）
+        PlayerStateChatHandler.register();
         WalkieTalkieChatHandler.register();
 
         // 注册回放默认格式化器

@@ -62,7 +62,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Unique
     private Scheduler.ScheduledTask poisonSleepTask;
-
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
         super(entityType, world);
     }

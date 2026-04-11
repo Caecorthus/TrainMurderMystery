@@ -39,6 +39,7 @@
     "client.items.HeldItemRendererMixin",
     "client.items.SkinItemRendererMixin",
     "client.restrictions.ChatHudMixin",
+    "client.restrictions.ChatScreenMixin",
     "client.restrictions.CreativeInventoryScreenMixin",
     "client.restrictions.DebugHudMixin",
     "client.restrictions.EntityInvisibilityMixin",

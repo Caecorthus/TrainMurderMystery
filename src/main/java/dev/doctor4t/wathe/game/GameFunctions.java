@@ -148,7 +148,6 @@ public class GameFunctions {
         initializeShopsForPlayers(readyPlayerList);
 
         // 角色分配后再生成信件
-        giveLettersToPlayers(serverWorld, gameComponent, readyPlayerList, playerRoomMap);
 
         GameEvents.ON_FINISH_INITIALIZE.invoker().onFinishInitialize(serverWorld, gameComponent);
         gameComponent.setGameStatus(GameWorldComponent.GameStatus.ACTIVE);

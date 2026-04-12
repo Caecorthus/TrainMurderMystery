@@ -343,6 +343,7 @@
   "itemGroup.wathe.decoration": "Wathe：装饰与功能",
   "itemGroup.wathe.equipment": "Wathe：装备",
   "key.wathe.instinct": "本能",
+  "key.wathe.instinct_toggle": "本能切换",
   "key.wathe.map_vote": "地图投票",
   "lobby.autostart.active": "玩家数达到 %s 人以上后将自动开始游戏",
   "lobby.autostart.gamemode": "当前模式：%s",

@@ -147,9 +147,6 @@ public class GameFunctions {
         // 角色分配后初始化商店
         initializeShopsForPlayers(readyPlayerList);
 
-        // 角色分配后再生成信件
-        giveLettersToPlayers(serverWorld, gameComponent, readyPlayerList, playerRoomMap);
-
         GameEvents.ON_FINISH_INITIALIZE.invoker().onFinishInitialize(serverWorld, gameComponent);
         gameComponent.setGameStatus(GameWorldComponent.GameStatus.ACTIVE);
         gameComponent.sync();
@@ -299,6 +296,12 @@ public class GameFunctions {
         }
     }
 
+    /*
+     * 开局信件功能已移除（见 PR #6「分离存活与死亡聊天并移除开局信件」，2026-04-11）。
+     * 方法暂时保留为注释形式，以防未来需要按模式或剧本重新启用。
+     * 如长期确认不再需要，可直接删除本段注释及下方方法。
+     */
+    /*
     private static void giveLettersToPlayers(ServerWorld serverWorld, GameWorldComponent gameComponent,
                                               List<ServerPlayerEntity> players, Map<UUID, Integer> playerRoomMap) {
         int letterColor = 0xC5AE8B; // 固定棕色，与旧版一致
@@ -316,6 +319,7 @@ public class GameFunctions {
             player.giveItemStack(letter);
         }
     }
+    */
 
     /**
      * 应用信件Lore，支持动态fallback机制

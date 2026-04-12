@@ -613,7 +613,7 @@ public class WatheClient implements ClientModInitializer {
 
     private static boolean isInstinctKeyActive() {
         if (instinctToggleActive) {
-            return instinctToggleActive;
+            return true;
         }
         if (WatheConfig.instinctMode == WatheConfig.InstinctModeConfig.TOGGLE) {
             return false;

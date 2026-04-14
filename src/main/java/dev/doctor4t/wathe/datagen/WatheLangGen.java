@@ -150,6 +150,9 @@ public class WatheLangGen extends FabricLanguageProvider {
         builder.add("key.wathe.instinct", "Instinct");
         builder.add("key.wathe.map_vote", "Map Vote");
         builder.add("category.wathe.keybinds", "Spark Murder Mystery");
+        builder.add("options.wathe.instinct_mode", "Instinct Mode");
+        builder.add("options.wathe.instinct_mode.hold", "Hold");
+        builder.add("options.wathe.instinct_mode.toggle", "Toggle");
 
         builder.add("task.feel", "You feel like ");
         builder.add("task.fake", "You could fake ");

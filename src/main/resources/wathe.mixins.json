@@ -25,6 +25,7 @@
   },
   "client": [
     "client.AbstractClientPlayerEntityMixin",
+    "client.ControlsOptionsScreenMixin",
     "client.EntityRendererDispatchMixin",
     "client.GameRendererMixin",
     "client.MinecraftClientMixin",

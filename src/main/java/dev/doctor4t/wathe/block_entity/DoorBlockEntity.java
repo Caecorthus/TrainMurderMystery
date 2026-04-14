@@ -160,6 +160,9 @@ public abstract class DoorBlockEntity extends SyncingBlockEntity {
     }
 
     public void jam() {
+        if (this.isBlasted()) {
+            return;
+        }
         this.setJammed(GameConstants.JAMMED_DOOR_TIME);
         if (this.open) {
             this.toggle(false);

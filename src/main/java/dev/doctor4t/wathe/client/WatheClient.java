@@ -271,6 +271,10 @@ public class WatheClient implements ClientModInitializer {
         WatheItemTooltips.addTooltips();
 
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
+            if (WatheConfig.instinctMode != WatheConfig.InstinctModeConfig.TOGGLE) {
+                instinctToggleActive = false;
+            }
+
             // Handle instinct toggle mode — drain all key press events via while loop
             boolean instinctPressed = false;
             while (instinctKeybind.wasPressed()) {

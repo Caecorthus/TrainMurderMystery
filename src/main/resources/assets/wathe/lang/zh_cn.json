@@ -394,7 +394,7 @@
   "wathe.midnightconfig.instinctMode.tooltip": "选择本能透视的激活方式。\n\n按住：按住按键时激活。\n切换：按一次激活，再按一次关闭。",
   "wathe.midnightconfig.enum.InstinctModeConfig.HOLD": "按住",
   "wathe.midnightconfig.enum.InstinctModeConfig.TOGGLE": "切换",
-  "wathe.midnightconfig.title": "SPARK 谋杀之迷 - 配置",
+  "wathe.midnightconfig.title": "SPARK 谋杀之谜 - 配置",
   "wathe.midnightconfig.enum.SnowModeConfig.BOX_COLLIDER": "碰撞优化",
   "wathe.midnightconfig.enum.SnowModeConfig.NO_OPTIMIZATION": "默认",
   "wathe.midnightconfig.enum.SnowModeConfig.TURN_OFF": "无粒子",

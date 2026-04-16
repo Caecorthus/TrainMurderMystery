@@ -392,7 +392,7 @@
   "wathe.midnightconfig.instinctMode.tooltip": "選擇本能透視的啟動方式。\n\n按住：按住按鍵時啟動。\n切換：按一次啟動，再按一次關閉。",
   "wathe.midnightconfig.enum.InstinctModeConfig.HOLD": "按住",
   "wathe.midnightconfig.enum.InstinctModeConfig.TOGGLE": "切換",
-  "wathe.midnightconfig.title": "哈比特快號的最後航程 - 配置",
+  "wathe.midnightconfig.title": "SPARK 謀殺之謎 - 配置",
   "wathe.midnightconfig.enum.SnowModeConfig.BOX_COLLIDER": "碰撞優化",
   "wathe.midnightconfig.enum.SnowModeConfig.NO_OPTIMIZATION": "默認",
   "wathe.midnightconfig.enum.SnowModeConfig.TURN_OFF": "無粒子",

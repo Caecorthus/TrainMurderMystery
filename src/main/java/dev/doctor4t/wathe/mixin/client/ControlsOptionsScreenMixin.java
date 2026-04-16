@@ -33,7 +33,7 @@ public abstract class ControlsOptionsScreenMixin extends GameOptionsScreen {
         return new SimpleOption<>(
                 "options.wathe.instinct_mode",
                 SimpleOption.emptyTooltip(),
-                (optionText, value) -> Text.translatable("options.wathe.instinct_mode." + value.name().toLowerCase()),
+                (optionText, value) -> Text.translatable("options.wathe.instinct_mode." + value.name().toLowerCase(java.util.Locale.ROOT)),
                 new SimpleOption.PotentialValuesBasedCallbacks<>(
                         List.of(WatheConfig.InstinctModeConfig.HOLD, WatheConfig.InstinctModeConfig.TOGGLE),
                         Codec.STRING.xmap(WatheConfig.InstinctModeConfig::valueOf, WatheConfig.InstinctModeConfig::name)

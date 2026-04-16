@@ -84,7 +84,6 @@ public class WatheClient implements ClientModInitializer {
     public static final Map<UUID, PlayerListEntry> PLAYER_ENTRIES_CACHE = Maps.newHashMap();
 
     public static KeyBinding instinctKeybind;
-    public static KeyBinding instinctToggleKeybind;
     public static KeyBinding mapVoteKeybind;
     public static float prevInstinctLightLevel = -.04f;
     public static float instinctLightLevel = -.04f;
@@ -272,19 +271,16 @@ public class WatheClient implements ClientModInitializer {
         WatheItemTooltips.addTooltips();
 
         ClientTickEvents.START_WORLD_TICK.register(clientWorld -> {
+            if (WatheConfig.instinctMode != WatheConfig.InstinctModeConfig.TOGGLE) {
+                instinctToggleActive = false;
+            }
+
             // Handle instinct toggle mode — drain all key press events via while loop
             boolean instinctPressed = false;
             while (instinctKeybind.wasPressed()) {
                 instinctPressed = true;
             }
-            boolean instinctTogglePressed = false;
-            while (instinctToggleKeybind.wasPressed()) {
-                instinctTogglePressed = true;
-            }
             if (WatheConfig.instinctMode == WatheConfig.InstinctModeConfig.TOGGLE && instinctPressed) {
-                instinctToggleActive = !instinctToggleActive;
-            }
-            if (instinctTogglePressed) {
                 instinctToggleActive = !instinctToggleActive;
             }
 
@@ -402,13 +398,6 @@ public class WatheClient implements ClientModInitializer {
                 "key." + Wathe.MOD_ID + ".instinct",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_LEFT_ALT,
-                "category." + Wathe.MOD_ID + ".keybinds"
-        ));
-
-        instinctToggleKeybind = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key." + Wathe.MOD_ID + ".instinct_toggle",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_UNKNOWN,
                 "category." + Wathe.MOD_ID + ".keybinds"
         ));
 

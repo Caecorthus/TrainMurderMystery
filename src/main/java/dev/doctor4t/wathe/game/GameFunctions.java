@@ -171,6 +171,9 @@ public class GameFunctions {
 
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
             player.dismountVehicle();
+            if (player.isSleeping()) {
+                player.wakeUp();
+            }
         }
 
         for (ServerPlayerEntity player : players) {

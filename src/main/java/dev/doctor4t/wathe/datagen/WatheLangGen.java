@@ -150,6 +150,9 @@ public class WatheLangGen extends FabricLanguageProvider {
         builder.add("key.wathe.instinct", "Instinct");
         builder.add("key.wathe.map_vote", "Map Vote");
         builder.add("category.wathe.keybinds", "Spark Murder Mystery");
+        builder.add("options.wathe.instinct_mode", "Instinct Mode");
+        builder.add("options.wathe.instinct_mode.hold", "Hold");
+        builder.add("options.wathe.instinct_mode.toggle", "Toggle");
 
         builder.add("task.feel", "You feel like ");
         builder.add("task.fake", "You could fake ");
@@ -199,6 +202,8 @@ public class WatheLangGen extends FabricLanguageProvider {
         builder.add("wathe.midnightconfig.ultraPerfMode", "Ultra Performance Mode");
         builder.add("wathe.midnightconfig.ultraPerfMode.tooltip", "Disables scenery for a worse visual experience but maximum performance. Lowers render distance to 2.");
         builder.add("wathe.midnightconfig.disableScreenShake", "Disable Screen Shake");
+        builder.add("wathe.midnightconfig.showMatchPlayerCount", "Show Match Player Count");
+        builder.add("wathe.midnightconfig.showMatchPlayerCount.tooltip", "Controls whether the current match player count is shown in the HUD.");
         builder.add("wathe.midnightconfig.snowOptLevel", "Snow particles mode");
         builder.add("wathe.midnightconfig.snowOptLevel.tooltip", "How snow particle collisions will be processed.\n\n'Box Collider' may not work on all maps.");
         builder.add("wathe.midnightconfig.enum.SnowModeConfig.NO_OPTIMIZATION", "Default");
@@ -206,6 +211,8 @@ public class WatheLangGen extends FabricLanguageProvider {
         builder.add("wathe.midnightconfig.enum.SnowModeConfig.TURN_OFF", "No particles");
         builder.add("wathe.midnightconfig.snowflakeChance", "Snowflake Particle Count (%)");
         builder.add("wathe.midnightconfig.snowflakeChance.tooltip", "Controls the spawn chance of snowflake particles.\n0 = Off, 100 = Maximum.");
+        builder.add("wathe.midnightconfig.chatHistoryLimit", "Chat History Limit");
+        builder.add("wathe.midnightconfig.chatHistoryLimit.tooltip", "Controls how many chat messages can be scrolled back through.\nHigher values use more memory and may make chat scrolling less smooth.");
 
         builder.add("wathe.argument.game_mode.invalid", "Game mode could not be found");
         builder.add("wathe.argument.map_effect.invalid", "Map effect could not be found");

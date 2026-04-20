@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import dev.doctor4t.wathe.Wathe;
 import dev.doctor4t.wathe.api.GameMode;
 import dev.doctor4t.wathe.api.MapEffect;
+import dev.doctor4t.wathe.api.WatheGameModes;
 import dev.doctor4t.wathe.api.event.GameEvents;
 import dev.doctor4t.wathe.api.Role;
 import dev.doctor4t.wathe.api.WatheRoles;
@@ -502,7 +503,7 @@ public class GameFunctions {
         if (MapRegistry.getInstance().getMapCount() > 0) {
             MapVotingComponent voting = MapVotingComponent.KEY.get(
                 world.getServer().getScoreboard());
-            voting.startVoting();
+            voting.startModeVoting();
         }
     }
 
@@ -931,6 +932,11 @@ public class GameFunctions {
      * 投票结束后传送所有玩家到目标维度
      */
     public static void finalizeVoting(ServerWorld currentWorld, Identifier targetDimensionId) {
+        Identifier gameModeId = MapVotingComponent.KEY.get(currentWorld.getServer().getScoreboard()).getLastSelectedGameMode();
+        finalizeVoting(currentWorld, gameModeId != null ? gameModeId : WatheGameModes.MURDER_ID, targetDimensionId);
+    }
+
+    public static void finalizeVoting(ServerWorld currentWorld, Identifier targetGameModeId, Identifier targetDimensionId) {
         RegistryKey<World> dimKey = RegistryKey.of(RegistryKeys.WORLD, targetDimensionId);
         ServerWorld targetWorld = currentWorld.getServer().getWorld(dimKey);
 
@@ -938,6 +944,9 @@ public class GameFunctions {
             Wathe.LOGGER.warn("Target dimension {} not found, staying in current world", targetDimensionId);
             return;
         }
+
+        GameMode targetGameMode = WatheGameModes.GAME_MODES.getOrDefault(targetGameModeId, WatheGameModes.MURDER);
+        GameWorldComponent.KEY.get(targetWorld).setGameMode(targetGameMode);
 
         // Teleport all players from all worlds to the target dimension
         for (ServerWorld world : currentWorld.getServer().getWorlds()) {
@@ -951,7 +960,7 @@ public class GameFunctions {
             }
         }
 
-        Wathe.LOGGER.info("Teleported all players to dimension {}", targetDimensionId);
+        Wathe.LOGGER.info("Teleported all players to dimension {} with game mode {}", targetDimensionId, targetGameModeId);
     }
 
     public enum WinStatus {

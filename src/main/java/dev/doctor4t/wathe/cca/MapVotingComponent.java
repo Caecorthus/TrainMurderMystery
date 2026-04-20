@@ -462,8 +462,6 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
             return;
         }
 
-        applyDefaultVotesToRandomForUnvotedPlayers();
-
         int optionCount = votingStage == VotingStage.MODE ? availableModes.size() : availableMaps.size();
         int selectedIndex = selectOptionWeighted(optionCount);
         if (votingStage == VotingStage.MODE) {
@@ -555,28 +553,6 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
         }
 
         return 0; // fallback
-    }
-
-    private void applyDefaultVotesToRandomForUnvotedPlayers() {
-        if (server == null || roulettePhase || !votingActive) {
-            return;
-        }
-
-        int randomOptionIndex = getRandomOptionIndexForCurrentStage();
-        if (randomOptionIndex < 0 || randomOptionIndex >= voteCounts.length) {
-            return;
-        }
-
-        for (ServerWorld world : server.getWorlds()) {
-            for (var player : world.getPlayers()) {
-                UUID playerId = player.getUuid();
-                if (playerVotes.containsKey(playerId)) {
-                    continue;
-                }
-                playerVotes.put(playerId, randomOptionIndex);
-                voteCounts[randomOptionIndex]++;
-            }
-        }
     }
 
     private int getRandomOptionIndexForCurrentStage() {

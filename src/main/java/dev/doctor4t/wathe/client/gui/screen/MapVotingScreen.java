@@ -24,6 +24,7 @@ import java.util.Random;
  * 地图投票界面 - 东方快车风格优化版
  */
 public class MapVotingScreen extends Screen {
+    private static final Identifier RANDOM_MAP_OPTION_ID = Identifier.of("wathe", "random_map");
 
     // --- 风格配色方案 (列车谋杀案风格) ---
     // 背景：深色红木/皮革
@@ -170,11 +171,15 @@ public class MapVotingScreen extends Screen {
         MapVotingComponent voting = getVoting();
         if (voting != null && voting.isRoulettePhase()) {
             if (!rouletteStripInitialized) {
-                initRouletteStrip(voting.getSelectedMapIndex(), voting.getAvailableMaps().size());
-                rouletteStripInitialized = true;
-                rouletteResultSoundPlayed = false;
-                lastRouletteTickIndex = -1;
-                rouletteAnimTick = 0;
+                List<VotingMapEntry> rouletteMaps = getRouletteMaps(voting);
+                int rouletteSelectedIndex = getRouletteSelectedMapIndex(voting, rouletteMaps);
+                if (!rouletteMaps.isEmpty() && rouletteSelectedIndex >= 0) {
+                    initRouletteStrip(rouletteSelectedIndex, rouletteMaps.size());
+                    rouletteStripInitialized = true;
+                    rouletteResultSoundPlayed = false;
+                    lastRouletteTickIndex = -1;
+                    rouletteAnimTick = 0;
+                }
             }
             rouletteAnimTick++;
         } else {
@@ -232,7 +237,7 @@ public class MapVotingScreen extends Screen {
 
         if (voting.isRoulettePhase()) {
             // 轮盘阶段
-            renderRouletteStrip(context, maps, delta, yOffset);
+            renderRouletteStrip(context, getRouletteMaps(voting), delta, yOffset);
 
             // 标题
             Text title = Text.translatable("gui.wathe.map_voting.selecting");
@@ -622,7 +627,7 @@ public class MapVotingScreen extends Screen {
     }
 
     private void renderRouletteStrip(DrawContext context, List<VotingMapEntry> maps, float delta, int yOffset) {
-        if (rouletteSequence == null) return;
+        if (rouletteSequence == null || maps.isEmpty()) return;
 
         int centerY = this.height / 2;
         int centerX = this.width / 2;
@@ -696,6 +701,28 @@ public class MapVotingScreen extends Screen {
         // 绘制黄铜指针：上方 ▽ 尖端朝下，下方 △ 尖端朝上
         drawTriangle(context, centerX, centerY - stripHeight / 2, 8, BRASS_COLOR, false);
         drawTriangle(context, centerX, centerY + stripHeight / 2, 8, BRASS_COLOR, true);
+    }
+
+    private List<VotingMapEntry> getRouletteMaps(MapVotingComponent voting) {
+        return voting.getAvailableMaps().stream()
+            .filter(map -> !RANDOM_MAP_OPTION_ID.equals(map.mapId()))
+            .toList();
+    }
+
+    private int getRouletteSelectedMapIndex(MapVotingComponent voting, List<VotingMapEntry> rouletteMaps) {
+        int selectedMapIndex = voting.getSelectedMapIndex();
+        List<VotingMapEntry> availableMaps = voting.getAvailableMaps();
+        if (selectedMapIndex < 0 || selectedMapIndex >= availableMaps.size()) {
+            return -1;
+        }
+
+        Identifier selectedMapId = availableMaps.get(selectedMapIndex).mapId();
+        for (int i = 0; i < rouletteMaps.size(); i++) {
+            if (selectedMapId.equals(rouletteMaps.get(i).mapId())) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private void renderRouletteCard(DrawContext context, int x, int y, VotingMapEntry map, float scale, boolean isWinner, float time) {

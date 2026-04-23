@@ -427,7 +427,7 @@ public class MapVotingScreen extends Screen {
                 context.fill(x + 5, y + 5, x + cardWidth - 5, y + cardHeight - 5, 0xAA000000);
                 context.drawBorder(x + 5, y + 5, cardWidth - 10, cardHeight - 10, 0x55FFFFFF);
 
-                Text reasonText = Text.translatable("gui.wathe.mode_voting.unavailable.no_maps");
+                Text reasonText = parseUnavailableModeReason(mode.reason());
                 drawCenteredText(context, reasonText, x + cardWidth / 2, y + cardHeight / 2 - 4, 0xFFAAAAAA);
             }
         }
@@ -831,6 +831,16 @@ public class MapVotingScreen extends Screen {
             }
         }
         return Text.translatable("gui.wathe.map_voting.unavailable");
+    }
+
+    private Text parseUnavailableModeReason(String reason) {
+        if (reason != null && reason.contains(":")) {
+            String[] parts = reason.split(":", 2);
+            if ("min_players".equals(parts[0])) {
+                return Text.translatable("gui.wathe.mode_voting.min_players", parts[1]);
+            }
+        }
+        return Text.translatable("gui.wathe.mode_voting.unavailable.no_maps");
     }
 
     // 居中绘制文字，无阴影

@@ -16,6 +16,7 @@ import net.minecraft.util.Identifier;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -62,6 +63,7 @@ public class MapEnhancementsConfigurationReloader implements SimpleSynchronousRe
             MAPS_DATA_PATH,
             id -> id.getPath().endsWith(".json")
         );
+        List<PendingMapConfig> pendingRefConfigs = new ArrayList<>();
 
         for (Map.Entry<Identifier, Resource> entry : mapResources.entrySet()) {
             Identifier resourceId = entry.getKey();
@@ -81,6 +83,11 @@ public class MapEnhancementsConfigurationReloader implements SimpleSynchronousRe
                 String name = path.substring(MAPS_DATA_PATH.length() + 1, path.length() - 5); // strip prefix and .json
                 Identifier mapId = Identifier.of(resourceId.getNamespace(), name);
 
+                if (json.isJsonObject() && json.getAsJsonObject().has("ref")) {
+                    pendingRefConfigs.add(new PendingMapConfig(resourceId, mapId, json.getAsJsonObject()));
+                    continue;
+                }
+
                 Optional<MapRegistryEntry> result = parseMapConfig(resourceId, mapId, json);
 
                 if (result.isPresent()) {
@@ -93,6 +100,7 @@ public class MapEnhancementsConfigurationReloader implements SimpleSynchronousRe
                 Wathe.LOGGER.error("Error loading map config from {}", resourceId, e);
             }
         }
+        resolvePendingRefConfigs(pendingRefConfigs);
 
         // === Legacy compatibility: load from data/wathe/areas/*.json as overworld map ===
         // Only if no maps were loaded from the new path
@@ -148,6 +156,28 @@ public class MapEnhancementsConfigurationReloader implements SimpleSynchronousRe
         }
 
         Wathe.LOGGER.info("Map registry loaded: {} maps registered", MapRegistry.getInstance().getMapCount());
+    }
+
+    private void resolvePendingRefConfigs(List<PendingMapConfig> pendingRefConfigs) {
+        boolean madeProgress = true;
+        while (!pendingRefConfigs.isEmpty() && madeProgress) {
+            madeProgress = false;
+            for (int i = pendingRefConfigs.size() - 1; i >= 0; i--) {
+                PendingMapConfig pending = pendingRefConfigs.get(i);
+                Optional<MapRegistryEntry> result = parseMapConfig(pending.resourceId(), pending.mapId(), pending.json());
+                if (result.isPresent()) {
+                    MapRegistry.getInstance().register(pending.mapId(), result.get());
+                    Wathe.LOGGER.info("Registered map '{}' (dimension: {}) from {}",
+                        pending.mapId(), result.get().dimensionId(), pending.resourceId());
+                    pendingRefConfigs.remove(i);
+                    madeProgress = true;
+                }
+            }
+        }
+
+        for (PendingMapConfig pending : pendingRefConfigs) {
+            Wathe.LOGGER.error("Unable to resolve referenced map config {} after loading all base maps", pending.resourceId());
+        }
     }
 
     private Optional<MapRegistryEntry> parseMapConfig(Identifier resourceId, Identifier mapId, JsonElement json) {
@@ -222,5 +252,8 @@ public class MapEnhancementsConfigurationReloader implements SimpleSynchronousRe
             }
         });
         return result;
+    }
+
+    private record PendingMapConfig(Identifier resourceId, Identifier mapId, JsonObject json) {
     }
 }

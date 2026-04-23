@@ -295,6 +295,16 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
                 continue;
             }
 
+            List<MapRegistryEntry> eligibleMapsForMode = MapRegistry.getInstance().getEligibleMapsForGameMode(mode.identifier, playerCount);
+            if (playerCount < mode.minPlayerCount || eligibleMapsForMode.isEmpty()) {
+                this.unavailableModes.add(new UnavailableModeEntry(
+                    mode.identifier,
+                    net.minecraft.text.Text.translatable("gamemode." + mode.identifier.getNamespace() + "." + mode.identifier.getPath()).getString(),
+                    playerCount < mode.minPlayerCount ? "min_players:" + mode.minPlayerCount : "no_maps"
+                ));
+                continue;
+            }
+
             this.availableModes.add(new VotingModeEntry(
                 mode.identifier,
                 net.minecraft.text.Text.translatable("gamemode." + mode.identifier.getNamespace() + "." + mode.identifier.getPath()).getString(),
@@ -302,7 +312,7 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
                     "gui.wathe.mode_voting.description." + mode.identifier.getNamespace() + "." + mode.identifier.getPath()
                 ).getString(),
                 mode.minPlayerCount,
-                false
+                mode.hasPlayerLimitDisplay
             ));
         }
 
@@ -329,15 +339,23 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
 
         List<MapRegistryEntry> allModeMaps = MapRegistry.getInstance().getMapsForGameMode(gameModeId);
         for (MapRegistryEntry mapEntry : allModeMaps) {
-            this.availableMaps.add(new VotingMapEntry(
-                mapEntry.id(),
-                mapEntry.dimensionId(),
-                gameModeId,
-                mapEntry.displayName(),
-                mapEntry.description().orElse(""),
-                mapEntry.minPlayers(),
-                mapEntry.maxPlayers()
-            ));
+            if (mapEntry.isEligible(playerCount)) {
+                this.availableMaps.add(new VotingMapEntry(
+                    mapEntry.id(),
+                    mapEntry.dimensionId(),
+                    gameModeId,
+                    mapEntry.displayName(),
+                    mapEntry.description().orElse(""),
+                    mapEntry.minPlayers(),
+                    mapEntry.maxPlayers()
+                ));
+            } else {
+                this.unavailableMaps.add(new UnavailableMapEntry(
+                    mapEntry.dimensionId(),
+                    mapEntry.displayName(),
+                    getMapUnavailableReason(mapEntry, playerCount)
+                ));
+            }
         }
 
         if (getRandomizableMapIndices(gameModeId).size() > 1) {
@@ -375,6 +393,16 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
         Wathe.LOGGER.info("Map voting started for mode {} with {} eligible maps, {} unavailable, for {} players",
             gameModeId, availableMaps.size(), unavailableMaps.size(), playerCount);
         this.sync();
+    }
+
+    private String getMapUnavailableReason(MapRegistryEntry mapEntry, int playerCount) {
+        if (playerCount < mapEntry.minPlayers()) {
+            return "min_players:" + mapEntry.minPlayers();
+        }
+        if (playerCount > mapEntry.maxPlayers()) {
+            return "max_players:" + mapEntry.maxPlayers();
+        }
+        return "unavailable";
     }
 
     private int indexOfMode(Identifier gameModeId) {

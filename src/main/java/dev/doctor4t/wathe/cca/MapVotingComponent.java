@@ -54,7 +54,6 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
     private boolean roulettePhase = false;
     private int rouletteTicksRemaining = 0;
     private boolean waitingForPlayersToStartVoting = false;
-    private VotingStage waitingVotingStage = VotingStage.MODE;
 
     // === Persisted ===
     @Nullable
@@ -212,7 +211,7 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
 
         int playerCount = getOnlinePlayerCount();
         if (playerCount < MIN_PLAYERS_TO_START_VOTING) {
-            resetAndWaitForPlayers(VotingStage.MAP);
+            resetAndWaitForPlayers();
             Wathe.LOGGER.info("Waiting to start map voting: {}/{} players online", playerCount, MIN_PLAYERS_TO_START_VOTING);
             return;
         }
@@ -240,7 +239,7 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
 
         int playerCount = getOnlinePlayerCount();
         if (playerCount < MIN_PLAYERS_TO_START_VOTING) {
-            resetAndWaitForPlayers(VotingStage.MODE);
+            resetAndWaitForPlayers();
             Wathe.LOGGER.info("Waiting to start mode voting: {}/{} players online", playerCount, MIN_PLAYERS_TO_START_VOTING);
             return;
         }
@@ -388,10 +387,9 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
         this.sync();
     }
 
-    private void resetAndWaitForPlayers(VotingStage votingStage) {
+    private void resetAndWaitForPlayers() {
         reset();
         this.waitingForPlayersToStartVoting = true;
-        this.waitingVotingStage = votingStage;
         this.sync();
     }
 
@@ -683,7 +681,6 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
      */
     public void reset() {
         this.waitingForPlayersToStartVoting = false;
-        this.waitingVotingStage = VotingStage.MODE;
         this.votingActive = false;
         this.votingStage = VotingStage.MODE;
         this.votingTicksRemaining = 0;
@@ -709,18 +706,14 @@ public class MapVotingComponent implements AutoSyncedComponent, ServerTickingCom
 
         int onlinePlayers = getOnlinePlayerCount();
         if (votingActive && onlinePlayers == 0) {
-            resetAndWaitForPlayers(votingStage);
+            resetAndWaitForPlayers();
             Wathe.LOGGER.info("Voting reset because the server is empty; waiting for {} players", MIN_PLAYERS_TO_START_VOTING);
             return;
         }
 
         if (!votingActive) {
             if (waitingForPlayersToStartVoting && onlinePlayers >= MIN_PLAYERS_TO_START_VOTING) {
-                if (waitingVotingStage == VotingStage.MAP) {
-                    startVoting();
-                } else {
-                    startModeVoting();
-                }
+                startModeVoting();
             }
             return;
         }
